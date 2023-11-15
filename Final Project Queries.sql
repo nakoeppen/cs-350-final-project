@@ -71,19 +71,23 @@ SELECT COUNT(Employee.EmployeeID) AS "NumEmployees", Employee.State FROM payroll
 GROUP BY Employee.State
 ORDER BY COUNT(employee.EmployeeID);
 
-# 12) Trigger after Updating: After Updating the Job Table, if the hourly rate of an employee was reduced, also reduce their benefits package.
+# 12) Trigger after Updating: After Updating the Job Table,
+# if the hourly rate of an employee was reduced, instruct employee to notify their manager.
 delimiter //
-create trigger jobToBenefits after update
+create trigger jobSecurity after update
 on payroll.job
 FOR EACH ROW
        BEGIN
-           IF NEW.HourlyRate < OLD.HourlyRate AND NEW.BenefitsID > 1 THEN
-			   UPDATE job
-               SET job.BenefitsID = OLD.BenefitsID - 1
-               WHERE NEW.JobID = job.JobID;
-		    END IF;
-       END;//
-//
+           IF NEW.HourlyRate < OLD.HourlyRate THEN
+			   SIGNAL SQLSTATE '50002' SET MESSAGE_TEXT = 'Notify Manager of Payroll decrease!';
+			END IF;
+       END;
+// delimiter;
+
+
+UPDATE job
+SET job.HourlyRate = 35
+WHERE job.HourlyRate = 40;
 
 # 13) Trigger before Deleting: Before Deleting a row in the payperiods table, all associated rows in the timeworked table are deleted.
 delimiter //
@@ -95,6 +99,9 @@ FOR EACH ROW
            WHERE timeworked.PayPeriodID = OLD.PayPeriodID;
        END;//
 //
+
+DELETE FROM payperiods
+WHERE payperiods.PayPeriodID = 5;
 
 # 14) Stored Procedure to get sum of all expenses for a given department (param is DeptID) for the current calendar year
 delimiter //
@@ -116,12 +123,17 @@ IDENTIFIED BY "Koeppen1";
 CREATE USER IF NOT EXISTS mdembny@localhost
 IDENTIFIED BY "Dembny1";
 
-GRANT ALL ON bits TO nkoeppen@localhost;
-GRANT ALL ON bits TO mdembny@localhost;
+GRANT ALL ON payroll TO nkoeppen@localhost;
+GRANT ALL ON payroll TO mdembny@localhost;
 SHOW GRANTS FOR nkoeppen@localhost;
 SHOW GRANTS FOR mdembny@localhost;
 
-REVOKE UPDATE,DELETE ON bits FROM nkoeppen@localhost;
+REVOKE UPDATE,DELETE ON payroll FROM nkoeppen@localhost;
 SHOW GRANTS FOR nkoeppen@localhost;
+<<<<<<< Updated upstream:Final Project Queries.sql
 REVOKE UPDATE,DELETE ON bits FROM mdembny@localhost;
 SHOW GRANTS FOR mdembny@localhost;
+=======
+REVOKE UPDATE,DELETE ON payroll FROM mdembny@localhost;
+SHOW GRANTS FOR mdembny@localhost;
+>>>>>>> Stashed changes:FInal Project Queries.sql
