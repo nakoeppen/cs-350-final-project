@@ -130,10 +130,7 @@ SHOW GRANTS FOR mdembny@localhost;
 
 REVOKE UPDATE,DELETE ON payroll FROM nkoeppen@localhost;
 SHOW GRANTS FOR nkoeppen@localhost;
-<<<<<<< Updated upstream:Final Project Queries.sql
-REVOKE UPDATE,DELETE ON bits FROM mdembny@localhost;
-SHOW GRANTS FOR mdembny@localhost;
-=======
+
 REVOKE UPDATE,DELETE ON payroll FROM mdembny@localhost;
 SHOW GRANTS FOR mdembny@localhost;
->>>>>>> Stashed changes:FInal Project Queries.sql
+
